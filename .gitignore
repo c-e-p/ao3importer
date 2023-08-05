@@ -12,4 +12,4 @@ dist
 venv/
 
 # Local test stuff
-src/test_scripts/
+test_scripts/

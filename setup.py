@@ -31,7 +31,7 @@ setup(
                       'six==1.16.0',
                       'soupsieve==2.4.1',
                       'tqdm==4.65.0',
-                      'urllib3==2.0.3',
+                      'urllib3>=1.25.4',
                       'win32-setctime==1.1.0'],
 
     classifiers=[

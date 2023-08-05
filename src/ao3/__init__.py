@@ -1,10 +1,13 @@
 # -*- encoding: utf-8
 
 import requests
-from . import utils
-from .users import User
 from .works import Work
-from .comments import Comments
+from .chapters import Chapters
+from .work_list import WorkList
+
+__version__ = "0.1.0"
+__author__ = 'Elena, ladyofthelog, alexwlchan'
+
 
 class AO3(object):
     """A scraper for the Archive of Our Own (AO3)."""
@@ -13,21 +16,8 @@ class AO3(object):
         self.user = None
         self.session = requests.Session()
 
-#bypasses AO3 login to avoid plaintext credential entry
-#user can input in their current AO3 session ID
-
-    def login(self, username, cookie):
-        """Log in to the archive.
-        This allows you to access pages that are only available while
-        logged in. Does no checking if the cookie is valid.
-        The cookie should be the value for _otwarchive_session
-        """
-        self.user = User(username,cookie)
-        self.session = self.user.sess
-
     def __repr__(self):
         return '%s()' % (type(self).__name__)
-
 
     def work(self, id):
         """Look up a work that's been posted to AO3.
@@ -36,7 +26,8 @@ class AO3(object):
         """
         return Work(id=id, sess=self.session)
 
+    def chapters(self, id):
+        return Chapters(id=id,sess=self.session)
 
-    def comments(self, id):
-        return Comments(id=id,sess=self.session)
-
+    def work_list(self, username):
+        return WorkList(username=username, sess=self.session)

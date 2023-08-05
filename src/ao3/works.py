@@ -2,9 +2,9 @@
 
 from datetime import datetime
 import json
-
+import time
 from bs4 import BeautifulSoup, Tag
-import requests
+from .common import Common
 
 
 class WorkNotFound(Exception):
@@ -19,18 +19,19 @@ class Work(object):
 
     def __init__(self, id, sess=None):
         self.id = id
-
-
-        # Fetch the HTML for this work
-        if sess == None:
-            sess = requests.Session()
-        req = sess.get('https://archiveofourown.org/works/%s' % self.id)
-
+        self.common = Common()
+        api_url = f"https://archiveofourown.org/works/{self.id}"
+        req = self.common.recursive_get_data(api_url)
+        print(f"Fetching work: {self.id}")
         if req.status_code == 404:
             raise WorkNotFound('Unable to find a work with id %r' % self.id)
+        elif req.status_code == 429:
+            print("timeout... waiting 3 mins and trying again")
+            time.sleep(180)
+            req = sess.get('https://archiveofourown.org/works/%s' % self.id)
         elif req.status_code != 200:
             raise RuntimeError('Unexpected error from AO3 API: %r (%r)' % (
-                req.text, req.statuscode))
+                req.text, req.status_code))
 
         # For some works, AO3 throws up an interstitial page asking you to
         # confirm that you really want to see the adult works.  Yes, we do.
@@ -76,7 +77,7 @@ class Work(object):
         #     <h2 class="title heading">[title]</h2>
         #
         title_tag = self._soup.find('h2', attrs={'class': 'title'})
-        return title_tag.text.strip()
+        return title_tag.text.strip() if title_tag else 'Untitled'
 
     @property
     def author(self):
@@ -86,7 +87,7 @@ class Work(object):
         #     <h3 class="byline heading">
         #       <a href="/users/[author_name]" rel="author">[author_name]</a>
         #     </h3>
-        # 
+        #
         # Unless the author is anonymous... in which case there is no link
         #
         byline_tag = self._soup.find('h3', attrs={'class': 'byline'})
@@ -111,8 +112,11 @@ class Work(object):
         #     </div>
         #
         summary_div = self._soup.find('div', attrs={'class': 'summary'})
-        blockquote = summary_div.find('blockquote')
-        return blockquote.renderContents().decode('utf8').strip()
+        if summary_div:
+            blockquote = summary_div.find('blockquote')
+            return blockquote.renderContents().decode('utf8').strip()
+        else:
+            return ''
 
     def _lookup_stat(self, class_name):
         """Returns the value of a stat."""
@@ -123,8 +127,10 @@ class Work(object):
         # This is a convenience method for looking up values from these divs.
         #
         dd_tag = self._soup.find('dd', attrs={'class': class_name})
+        if not dd_tag:
+            return None
         if 'tags' in dd_tag.attrs['class']:
-            return self._lookup_list_stat(dd_tag=dd_tag)  
+            return self._lookup_list_stat(dd_tag=dd_tag)
         return dd_tag.contents[0]
 
     def _lookup_list_stat(self, dd_tag):
@@ -206,8 +212,8 @@ class Work(object):
         if self._soup.find("dd", {"class": "collections"}):
             collection_tag = self._soup.find("dd", {"class": "collections"})
             a_tag = [t
-                    for t in collection_tag.contents
-                    if isinstance(t, Tag)]
+                     for t in collection_tag.contents
+                     if isinstance(t, Tag)]
             return a_tag[0].contents[0].strip()
         else:
             return 'error'
@@ -225,17 +231,20 @@ class Work(object):
     @property
     def words(self):
         """The number of words in this work."""
-        return int(self._lookup_stat('words'))
+        words = self._lookup_stat('words')
+        return int(words.replace(',', "")) if words is not None else 0
 
     @property
     def comments(self):
         """The number of comments on this work."""
-        return int(self._lookup_stat('comments'))
+        comments = self._lookup_stat('comments')
+        return int(comments) if comments is not None else 0
 
     @property
     def kudos(self):
         """The number of kudos on this work."""
-        return int(self._lookup_stat('kudos'))
+        kudos = self._lookup_stat('kudos')
+        return int(kudos.replace(',', '')) if kudos is not None else 0
 
     @property
     def kudos_left_by(self):
@@ -284,12 +293,14 @@ class Work(object):
         #
         # It might be nice to follow that page and get a list of who has
         # bookmarked this, but for now just return the number.
-        return int(self._lookup_stat('bookmarks').contents[0])
+        bookmarks = self._lookup_stat('bookmarks')
+        return int(bookmarks.contents[0]) if bookmarks is not None else 0
 
     @property
     def hits(self):
         """The number of hits this work has received."""
-        return int(self._lookup_stat('hits'))
+        hits = self._lookup_stat('hits')
+        return int(hits.replace(',', '')) if hits is not None else 0
 
     def json(self, *args, **kwargs):
         """Provide a complete representation of the work in JSON.
@@ -315,12 +326,7 @@ class Work(object):
             'stats': {
                 'published': str(self.published),
                 'completed': str(self.completed),
-                'words': self.words,
-                # TODO: chapters
-                'comments': self.comments,
-                'kudos': self.kudos,
-                'bookmarks': self.bookmarks,
-                'hits': self.hits,
+                'words': self.words
             }
         }
         return json.dumps(data, *args, **kwargs)

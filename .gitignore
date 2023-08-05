@@ -7,3 +7,9 @@ dist
 .cache
 .coverage
 .tox
+
+# VENV
+venv/
+
+# Local test stuff
+src/test_scripts/

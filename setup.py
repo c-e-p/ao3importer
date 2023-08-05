@@ -8,7 +8,7 @@ setup(
     author='Elena',
     author_email='imperfectelena@protonmail.com',
     license='MIT license',
-    packages=['ourchive-ao3-importer'],
+    packages=['ourchiveao3importer'],
     install_requires=['beautifulsoup4==4.12.2',
                       'certifi==2023.5.7',
                       'cffi==1.15.1',

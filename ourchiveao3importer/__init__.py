@@ -9,7 +9,7 @@ __version__ = "0.1.0"
 __author__ = 'Elena, ladyofthelog, alexwlchan'
 
 
-class AO3(object):
+class OurchiveAo3Importer(object):
     """A scraper for the Archive of Our Own (AO3)."""
 
     def __init__(self):

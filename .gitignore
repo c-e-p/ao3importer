@@ -1,7 +1,6 @@
 # Python detritus
 *.egg-info
 build
-dist
 
 # Test files
 .cache

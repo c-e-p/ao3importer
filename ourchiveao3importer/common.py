@@ -13,12 +13,11 @@ class Common(object):
 			'/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36 +imperfectelena@protonmail.com'
 		}
 
-	# todo this isn't actually recursive yet...
 	def recursive_get_data(self, request_url):
-		self.req = self.sess.get(request_url)
+		self.req = self.sess.get(request_url, headers=self.headers)
 		# if timeout, wait and try again
 		while self.req.status_code == 429:
 			print("timeout... waiting 3 mins and trying again")
 			time.sleep(360)
-			self.req = self.sess.get(request_url, headers=self.headers)
+			self.req = self.recursive_get_data(request_url)
 		return self.req

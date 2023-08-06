@@ -7,7 +7,7 @@ import time
 
 from bs4 import BeautifulSoup, Tag
 import requests
-from .common import Common
+from common import Common
 
 
 class WorkNotFound(Exception):
@@ -20,7 +20,7 @@ class RestrictedWork(Exception):
 
 class WorkList(object):
 
-    def __init__(self, username, sess=None):
+    def __init__(self, username=None, sess=None):
         self.username = username
         self.work_ids = []
         if sess is None:

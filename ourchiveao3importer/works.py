@@ -4,7 +4,7 @@ from datetime import datetime
 import json
 import time
 from bs4 import BeautifulSoup, Tag
-from .common import Common
+from common import Common
 
 
 class WorkNotFound(Exception):
@@ -330,3 +330,26 @@ class Work(object):
             }
         }
         return json.dumps(data, *args, **kwargs)
+
+    def __dict__(self):
+        data = {
+            'id': self.id,
+            'title': self.title,
+            'author': self.author,
+            'summary': self.summary,
+            'rating': self.rating,
+            'warnings': self.warnings,
+            'category': self.category,
+            'fandoms': self.fandoms,
+            'relationship': self.relationship,
+            'characters': self.characters,
+            'additional_tags': self.additional_tags,
+            'language': self.language,
+            'collections': self.collections,
+            'stats': {
+                'published': str(self.published),
+                'completed': str(self.completed),
+                'words': self.words
+            }
+        }
+        return data

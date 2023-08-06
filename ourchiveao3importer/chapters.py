@@ -7,7 +7,7 @@ import time
 
 from bs4 import BeautifulSoup, Tag
 import requests
-from .common import Common
+from common import Common
 
 
 class WorkNotFound(Exception):
@@ -42,7 +42,7 @@ class Chapters(object):
                 for line in contents:
                     content = f'{content}{line}'
 
-        return title, content
+        return {"title": title, "content": content}
 
     def chapter_contents(self):
         api_url = ('https://archiveofourown.org/works/%s?view_full_work=true&view_adult=true' % self.id)
@@ -92,3 +92,10 @@ class Chapters(object):
             'content': self.chapter_content
         }
         return json.dumps(data, *args, **kwargs)
+
+    def __dict__(self):
+        data = {
+            'id': self.id,
+            'content': self.chapter_content
+        }
+        return data

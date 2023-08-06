@@ -346,6 +346,7 @@ class Work(object):
             'additional_tags': self.additional_tags,
             'language': self.language,
             'collections': self.collections,
+            'completed': self.completed,
             'stats': {
                 'published': str(self.published),
                 'completed': str(self.completed),

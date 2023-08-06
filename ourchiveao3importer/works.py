@@ -4,7 +4,7 @@ from datetime import datetime
 import json
 import time
 from bs4 import BeautifulSoup, Tag
-from common import Common
+from .common import Common
 
 
 class WorkNotFound(Exception):

@@ -7,7 +7,7 @@ import time
 
 from bs4 import BeautifulSoup, Tag
 import requests
-from common import Common
+from .common import Common
 
 
 class WorkNotFound(Exception):

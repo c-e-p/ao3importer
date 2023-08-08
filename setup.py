@@ -15,7 +15,7 @@ setup(
                       'chardet==5.1.0',
                       'charset-normalizer==3.1.0',
                       'colorama==0.4.6',
-                      'cryptography==41.0.1',
+                      'cryptography==41.0.2',
                       'cssselect==1.2.0',
                       'EbookLib==0.18',
                       'idna==3.4',

@@ -34,6 +34,32 @@ class Chapters(object):
             title = str(h3_tag.find('a').contents[0])
         else:
             title = 'Chapter One'
+        summary_tag = chapter_tag.find('div', attrs={'id': 'summary'})
+        if summary_tag:
+            summary = ''
+            summary_all = summary_tag.findAll('p')
+            for line in summary_all:
+                summary = f'{summary}{line}'
+        else:
+            summary = ''
+        notes_tag = chapter_tag.find('div', attrs={'id': 'notes'})
+        if notes_tag:
+            notes = ''
+            notes_all = notes_tag.findAll('p')
+            for line in notes_all:
+                if '(See the end of the chapter' in f'{line}':
+                    continue
+                notes = f'{notes}{line}'
+        else:
+            notes = ''
+        end_notes_tag = chapter_tag.find('div', id=lambda x: x and x.endswith('endnotes'))
+        if end_notes_tag:
+            end_notes = ''
+            end_notes_all = end_notes_tag.findAll('p')
+            for line in end_notes_all:
+                end_notes = f'{end_notes}{line}'
+        else:
+            end_notes = ''
         contents = chapter_tag.find('div', attrs={'role': 'article'})
         content = ''
         if contents:
@@ -41,8 +67,7 @@ class Chapters(object):
             if contents:
                 for line in contents:
                     content = f'{content}{line}'
-
-        return {"title": title, "content": content}
+        return {"title": title, "content": content, "summary": summary, "notes": notes, "end_notes": end_notes}
 
     def chapter_contents(self):
         api_url = ('https://archiveofourown.org/works/%s?view_full_work=true&view_adult=true' % self.id)
@@ -61,7 +86,7 @@ class Chapters(object):
         if 'This work is only available to registered users' in req.text:
             raise RestrictedWork('Looking at work ID %s requires login')
         soup = BeautifulSoup(req.text, features='html.parser')
-        multi_chapter = soup.findAll('div', attrs={'class': 'chapter'})
+        multi_chapter = soup.findAll('div', id=lambda x: x and x.startswith('chapter-'))
         if not multi_chapter:
             chapter = soup.find('div', attrs={'id': 'workskin'})
             if chapter is None:
@@ -69,6 +94,7 @@ class Chapters(object):
                 return
             self.chapter_content.append(self.parsechapter(chapter))
         else:
+            count = 1
             for chapter_tag in multi_chapter:
                 if chapter_tag is None:
                     print(f"Chapter cannot be found for ID {self.id}")
@@ -76,8 +102,10 @@ class Chapters(object):
                 try:
                     if chapter_tag.findAll('p'):
                         self.chapter_content.append(self.parsechapter(chapter_tag))
+                        count += 1
                 except AttributeError:
                     raise
+            print(f'count: {count}')
 
 
     def json(self, *args, **kwargs):

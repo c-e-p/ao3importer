@@ -80,6 +80,19 @@ class Work(object):
         return title_tag.text.strip() if title_tag else 'Untitled'
 
     @property
+    def notes(self):
+        notes_tag = self._soup.select('div.notes.module')
+        if notes_tag:
+            notes = ''
+            grafs = notes_tag[0].find_all('p')
+            for line in grafs:
+                if '(See the end of the work for' not in line:
+                    notes = f'{notes}{line}'
+        else:
+            notes = ''
+        return notes
+
+    @property
     def author(self):
         """The author of this work."""
         # The author of the work is kept in the byline, in the form
@@ -346,6 +359,7 @@ class Work(object):
             'additional_tags': self.additional_tags,
             'language': self.language,
             'collections': self.collections,
+            'notes': self.notes,
             'stats': {
                 'published': str(self.published),
                 'completed': str(self.completed),

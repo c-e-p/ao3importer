@@ -86,7 +86,7 @@ class Work(object):
             notes = ''
             grafs = notes_tag[0].find_all('p')
             for line in grafs:
-                if '(See the end of the work for' not in line:
+                if '(See the end of the work for' not in f'{line}':
                     notes = f'{notes}{line}'
         else:
             notes = ''

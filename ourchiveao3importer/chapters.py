@@ -31,7 +31,11 @@ class Chapters(object):
     def parsechapter(self, chapter_tag):
         h3_tag = chapter_tag.find('h3', attrs={'class': 'title'})
         if h3_tag:
-            title = str(h3_tag.find('a').contents[0])
+            title = h3_tag.find('a')
+            if str(title.next_sibling) and str(title.next_sibling).strip():
+                title = title.next_sibling.strip(':').strip()
+            else:
+                title = str(title.contents[0])
         else:
             title = 'Chapter One'
         summary_tag = chapter_tag.find('div', attrs={'id': 'summary'})

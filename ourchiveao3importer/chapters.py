@@ -67,10 +67,15 @@ class Chapters(object):
         contents = chapter_tag.find('div', attrs={'role': 'article'})
         content = ''
         if contents:
-            contents = contents.findAll('p')
-            if contents:
-                for line in contents:
-                    content = f'{content}{line}'
+            child_content = contents.find('div', attrs={'class': 'userstuff'})
+            if child_content:
+                contents = child_content.findChildren()
+            else:
+                contents = contents.findChildren()
+            for line in contents:
+                if '<h3 class="landmark heading" id="work">Chapter Text</h3>' in f'{line}':
+                    continue
+                content = f'{content}{line}'
         return {"title": title, "content": content, "summary": summary, "notes": notes, "end_notes": end_notes}
 
     def chapter_contents(self):

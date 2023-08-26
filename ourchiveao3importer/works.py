@@ -358,7 +358,6 @@ class Work(object):
             'characters': self.characters,
             'additional_tags': self.additional_tags,
             'language': self.language,
-            'collections': self.collections,
             'notes': self.notes,
             'stats': {
                 'published': str(self.published),

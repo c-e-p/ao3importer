@@ -49,7 +49,7 @@ class Chapters(object):
         notes_tag = chapter_tag.find('div', attrs={'id': 'notes'})
         if notes_tag:
             notes = ''
-            notes_all = notes_tag.find('blockquote', attrs={'class': 'userstuff'}).findChildren()
+            notes_all = notes_tag.find('blockquote', attrs={'class': 'userstuff'})
             for line in notes_all:
                 if '(See the end of the chapter' in f'{line}':
                     continue
@@ -59,8 +59,7 @@ class Chapters(object):
         end_notes_tag = chapter_tag.find('div', id=lambda x: x and x.endswith('endnotes'))
         if end_notes_tag:
             end_notes = ''
-            end_notes_all = end_notes_tag.find('blockquote', attrs={'class': 'userstuff'}).findChildren()
-            for line in end_notes_all:
+            for line in end_notes_tag:
                 end_notes = f'{end_notes}{line}'
         else:
             end_notes = ''
@@ -80,7 +79,7 @@ class Chapters(object):
         work_end_notes = soup.find('div', id='work_endnotes')
         end_notes = ''
         if work_end_notes:
-            end_notes_all = work_end_notes.find('blockquote', attrs={'class': 'userstuff'}).findChildren()
+            end_notes_all = work_end_notes.find('blockquote', attrs={'class': 'userstuff'})
             for line in end_notes_all:
                 end_notes = f'{end_notes}{line}'
         self.chapter_content[-1]['end_notes'] = f"{self.chapter_content[-1]['end_notes']}{end_notes}"
@@ -121,7 +120,7 @@ class Chapters(object):
                         count += 1
                 except AttributeError:
                     raise
-        if len(self.chapter_content) > 0:
+        if multi_chapter and len(self.chapter_content) > 0:
             self.get_end_notes(soup)
 
 

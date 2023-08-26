@@ -13,3 +13,6 @@ venv/
 
 # Local test stuff
 test_scripts/
+ourchiveao3importer/__pycache__/
+test.py
+test_data.json

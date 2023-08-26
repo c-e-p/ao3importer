@@ -67,21 +67,19 @@ class Chapters(object):
         contents = chapter_tag.find('div', attrs={'role': 'article'})
         content = ''
         if contents:
-            child_content = contents.find('div', attrs={'class': 'userstuff'})
-            if child_content:
-                contents = child_content.findChildren()
-            else:
-                contents = contents.findChildren()
             for line in contents:
-                if '<h3 class="landmark heading" id="work">Chapter Text</h3>' in f'{line}':
+                line_str = f'{line}'
+                if line_str == '\n':
                     continue
-                content = f'{content}{line}'
+                if '<h3 class="landmark heading" id="work">' in line_str:
+                    continue
+                content = f'{content}{line_str}'
         return {"title": title, "content": content, "summary": summary, "notes": notes, "end_notes": end_notes}
 
     def get_end_notes(self, soup):
         work_end_notes = soup.find('div', id='work_endnotes')
+        end_notes = ''
         if work_end_notes:
-            end_notes = ''
             end_notes_all = work_end_notes.find('blockquote', attrs={'class': 'userstuff'}).findChildren()
             for line in end_notes_all:
                 end_notes = f'{end_notes}{line}'

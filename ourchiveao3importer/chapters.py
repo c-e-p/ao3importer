@@ -49,7 +49,7 @@ class Chapters(object):
         notes_tag = chapter_tag.find('div', attrs={'id': 'notes'})
         if notes_tag:
             notes = ''
-            notes_all = notes_tag.findAll('p')
+            notes_all = notes_tag.find('blockquote', attrs={'class': 'userstuff'}).findChildren()
             for line in notes_all:
                 if '(See the end of the chapter' in f'{line}':
                     continue
@@ -59,7 +59,7 @@ class Chapters(object):
         end_notes_tag = chapter_tag.find('div', id=lambda x: x and x.endswith('endnotes'))
         if end_notes_tag:
             end_notes = ''
-            end_notes_all = end_notes_tag.findAll('p')
+            end_notes_all = end_notes_tag.find('blockquote', attrs={'class': 'userstuff'}).findChildren()
             for line in end_notes_all:
                 end_notes = f'{end_notes}{line}'
         else:
@@ -77,6 +77,15 @@ class Chapters(object):
                     continue
                 content = f'{content}{line}'
         return {"title": title, "content": content, "summary": summary, "notes": notes, "end_notes": end_notes}
+
+    def get_end_notes(self, soup):
+        work_end_notes = soup.find('div', id='work_endnotes')
+        if work_end_notes:
+            end_notes = ''
+            end_notes_all = work_end_notes.find('blockquote', attrs={'class': 'userstuff'}).findChildren()
+            for line in end_notes_all:
+                end_notes = f'{end_notes}{line}'
+        self.chapter_content[-1]['end_notes'] = f"{self.chapter_content[-1]['end_notes']}{end_notes}"
 
     def chapter_contents(self):
         api_url = ('https://archiveofourown.org/works/%s?view_full_work=true&view_adult=true' % self.id)
@@ -114,7 +123,8 @@ class Chapters(object):
                         count += 1
                 except AttributeError:
                     raise
-            print(f'count: {count}')
+        if len(self.chapter_content) > 0:
+            self.get_end_notes(soup)
 
 
     def json(self, *args, **kwargs):

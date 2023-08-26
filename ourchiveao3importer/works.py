@@ -4,7 +4,7 @@ from datetime import datetime
 import json
 import time
 from bs4 import BeautifulSoup, Tag
-from .common import Common
+from common import Common
 
 
 class WorkNotFound(Exception):
@@ -20,9 +20,9 @@ class Work(object):
     def __init__(self, id, sess=None):
         self.id = id
         self.common = Common()
+        print(f"Fetching work: {self.id}")
         api_url = f"https://archiveofourown.org/works/{self.id}"
         req = self.common.recursive_get_data(api_url)
-        print(f"Fetching work: {self.id}")
         if req.status_code == 404:
             raise WorkNotFound('Unable to find a work with id %r' % self.id)
         elif req.status_code == 429:

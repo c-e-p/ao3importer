@@ -69,7 +69,7 @@ class Chapters(object):
         if contents:
             for line in contents:
                 line_str = f'{line}'
-                if line_str == '\n':
+                if line_str == '\n' or 'end cache' in line_str.strip():
                     continue
                 if '<h3 class="landmark heading" id="work">' in line_str:
                     continue

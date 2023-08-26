@@ -16,7 +16,7 @@ class Common(object):
 	def recursive_get_data(self, request_url):
 		self.req = self.sess.get(request_url, headers=self.headers)
 		# if timeout, wait and try again
-		while self.req.status_code == 429:
+		while self.req.status_code == 429 or "We've had to block this action to protect our systems" in self.req.text:
 			print("timeout... waiting 3 mins and trying again")
 			time.sleep(360)
 			self.req = self.recursive_get_data(request_url)

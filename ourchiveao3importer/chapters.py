@@ -35,9 +35,9 @@ class Chapters(object):
             if str(title.next_sibling) and str(title.next_sibling).strip():
                 title = title.next_sibling.strip(':').strip()
             else:
-                title = str(title.contents[0])
+                title = ''
         else:
-            title = 'Chapter One'
+            title = ''
         summary_tag = chapter_tag.find('div', attrs={'id': 'summary'})
         if summary_tag:
             summary = ''

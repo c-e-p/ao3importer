@@ -50,18 +50,20 @@ class Chapters(object):
         if notes_tag:
             notes = ''
             notes_all = notes_tag.find('blockquote', attrs={'class': 'userstuff'})
-            for line in notes_all:
-                if '(See the end of the chapter' in f'{line}':
-                    continue
-                notes = f'{notes}{line}'
+            if notes_all:
+                for line in notes_all:
+                    if '(See the end of the chapter' in f'{line}':
+                        continue
+                    notes = f'{notes}{line}'
         else:
             notes = ''
         end_notes_tag = chapter_tag.find('div', id=lambda x: x and x.endswith('endnotes'))
         if end_notes_tag:
             end_notes_tag = end_notes_tag.find('blockquote', attrs={'class': 'userstuff'})
             end_notes = ''
-            for line in end_notes_tag:
-                end_notes = f'{end_notes}{line}'
+            if end_notes_tag:
+                for line in end_notes_tag:
+                    end_notes = f'{end_notes}{line}'
         else:
             end_notes = ''
         contents = chapter_tag.find('div', attrs={'role': 'article'})

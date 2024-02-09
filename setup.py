@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='ourchiveao3importer',
-    version='0.1.2',
+    version='0.1.3',
     description='An AO3 downloader, used in Ourchive code, forked from ladyofthelog and alexwlchan.',
     url='https://github.com/c-e-p/ao3importer',
     author='Elena',
